@@ -1,5 +1,25 @@
 //references: https://processing.org/examples/tree.html, openprocessing.org trees
 
+String lines[];
+ArrayList<Rectangle> bectonScreens = new ArrayList<Rectangle>();
+
+class Rectangle {
+  float x1, x2, y1, y2, w, h;
+  int i;
+
+  Rectangle(float[] upperLeft, float[] bottomRight, int i) {
+    x1 = upperLeft[0];
+    y1 = upperLeft[1];
+    x2 = bottomRight[0];
+    y2 = bottomRight[1];
+
+    w = Math.abs(x2 - x1);
+    h = Math.abs(y2 - y1);
+
+    this.i = i;
+  }
+}
+
 class Pathfinder {
   
   PVector location;
@@ -39,7 +59,16 @@ class Pathfinder {
 Pathfinder[] paths;
 
 void setup() {
-  fullScreen();
+  fullScreen(P3D);
+  lines = loadStrings("screen_positions.txt");
+    for (int i = 0; i < lines.length; i++) {
+    String[] coords = lines[i].split(", ", 4);
+    
+    float[] coord1 = { parseFloat(coords[0]), parseFloat(coords[2]) };
+    float[] coord2 = { parseFloat(coords[1]), parseFloat(coords[3]) };
+    
+    bectonScreens.add(new Rectangle(coord1, coord2, i));
+  }
   background(255, 255, 251);
   ellipseMode(CENTER);
   fill(0);
@@ -54,16 +83,16 @@ void draw() {
     PVector loc = paths[i].location;  
     float diam = paths[i].diameter;
     ellipse(loc.x, loc.y, diam, diam);
-    paths[i ].update();
+    paths[i].update();
   }
+  
   if (frameCount % 1020 == 0){
   paths = new Pathfinder[1];
   paths[0] = new Pathfinder();
   }
-  //clear the screen at a random interval
   
+  //clear the screen after a minute
   if (frameCount % 61200 == 0){
     background(255, 255, 251, 5);
   }
-  
 }
